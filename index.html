@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raga-Vibe | Creative Collection</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#fff;overflow-x:hidden}
+
+/* Navigation */
+nav{position:fixed;top:0;left:0;right:0;background:rgba(10,10,10,.95);backdrop-filter:blur(10px);z-index:1000;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222}
+.logo{font-size:1.5rem;font-weight:bold;background:linear-gradient(90deg,#f5d76e,#ff6b9d,#c06cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:1rem;list-style:none}
+.nav-links a{color:#aaa;text-decoration:none;padding:.5rem 1rem;border-radius:5px;transition:all .3s;font-size:.9rem}
+.nav-links a:hover,.nav-links a.active{color:#fff;background:rgba(255,255,255,.1)}
+.menu-toggle{display:none;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;background:radial-gradient(circle at 50% 50%,#1a0033,#000)}
+.hero h1{font-size:clamp(3rem,8vw,6rem);background:linear-gradient(90deg,#f5d76e,#ff6b9d,#c06cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem}
+.hero p{font-size:clamp(1rem,3vw,1.5rem);color:#aaa;margin-bottom:2rem;max-width:600px}
+.github-btn{display:inline-flex;align-items:center;gap:.5rem;padding:1rem 2rem;background:linear-gradient(90deg,#ff6b9d,#c06cff);color:#fff;text-decoration:none;border-radius:30px;font-weight:bold;transition:transform .3s}
+.github-btn:hover{transform:scale(1.05)}
+
+/* Sections */
+.section{min-height:100vh;padding:6rem 2rem 2rem;display:none}
+.section.active{display:block}
+.section-title{text-align:center;font-size:clamp(2rem,5vw,3rem);margin-bottom:2rem;background:linear-gradient(90deg,#0ff,#f0f);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* Site 1: Raga-Vibe */
+#site1{background:radial-gradient(circle at 50% 50%,#1a0033,#000);display:flex;flex-direction:column;align-items:center;justify-content:center}
+#site1 canvas{max-width:90vw;height:auto;border:1px solid #333;border-radius:10px;background:rgba(0,0,0,.5)}
+#site1 button{margin-top:1.5rem;padding:.8rem 2rem;background:linear-gradient(90deg,#ff6b9d,#c06cff);color:#fff;border:none;border-radius:30px;font-size:1rem;cursor:pointer}
+
+/* Site 2: Cosmic */
+#site2{background:#000;position:relative;overflow:hidden}
+#site2 canvas{position:absolute;inset:0;width:100%;height:100%}
+#site2 .info{position:absolute;top:100px;left:50%;transform:translateX(-50%);color:#88f;font-family:monospace;letter-spacing:3px;z-index:10;text-align:center}
+
+/* Site 3: Snake */
+#site3{background:#0a0015;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#site3 canvas{max-width:90vw;max-height:60vh;width:400px;height:400px;border:2px solid #0ff;box-shadow:0 0 30px #0ff,inset 0 0 30px #0ff}
+.touch-controls{display:none;gap:1rem;margin-top:1rem}
+.touch-btn{width:60px;height:60px;background:rgba(0,255,255,.2);border:2px solid #0ff;border-radius:10px;color:#0ff;font-size:1.5rem;cursor:pointer}
+
+/* Site 4: Flow */
+#site4{background:#111;overflow:hidden}
+#site4 canvas{width:100%;height:100vh;display:block;cursor:pointer}
+
+/* Site 5: Zen */
+#site5{background:linear-gradient(180deg,#1a2a3a,#0a1520);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.circle{width:clamp(100px,20vw,150px);height:clamp(100px,20vw,150px);border-radius:50%;background:radial-gradient(circle,#aee,#246);animation:breathe 19s infinite;box-shadow:0 0 60px #aee}
+@keyframes breathe{0%,100%{transform:scale(1)}21%{transform:scale(2.5)}58%{transform:scale(2.5)}100%{transform:scale(1)}}
+#phase{margin-top:40px;font-size:clamp(1.2rem,4vw,1.5rem);letter-spacing:5px;color:#aee}
+
+/* Site 6: Terminal */
+#site6{background:#000;padding-top:80px}
+#term{white-space:pre-wrap;line-height:1.6;color:#0f0;font-family:'Courier New',monospace;max-width:90vw;margin:0 auto}
+#cmd{background:transparent;border:none;color:#0f0;font-family:inherit;font-size:1rem;outline:none;width:80%;max-width:600px}
+
+/* Site 7: Weather */
+#site7{height:100vh;overflow:hidden;transition:background 1s;position:relative}
+#scene{position:absolute;inset:0}
+.controls{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:20px;z-index:10}
+.orb{width:clamp(50px,10vw,60px);height:clamp(50px,10vw,60px);border-radius:50%;cursor:pointer;transition:transform .3s;box-shadow:0 0 20px rgba(255,255,255,.5)}
+.orb:hover{transform:scale(1.2)}
+
+/* Site 8: Poetry */
+#site8{background:#f4ecd8;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#3a2a1a}
+#poem{font-size:clamp(1.3rem,4vw,1.8rem);text-align:center;line-height:2;min-height:200px;margin:40px 0;font-style:italic;padding:0 1rem}
+#site8 button{padding:15px 40px;background:#3a2a1a;color:#f4ecd8;border:none;font-family:inherit;font-size:1rem;cursor:pointer;letter-spacing:3px}
+
+/* Site 9: Cube */
+#site9{height:100vh;display:flex;align-items:center;justify-content:center;background:#222;perspective:1000px;cursor:grab}
+.scene{width:clamp(150px,40vw,200px);height:clamp(150px,40vw,200px);position:relative;transform-style:preserve-3d;transition:transform .1s}
+.face{position:absolute;width:100%;height:100%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:clamp(2rem,5vw,3rem);color:#fff}
+.f1{background:linear-gradient(135deg,#f09,#f90);transform:translateZ(calc(clamp(150px,40vw,200px)/2))}
+.f2{background:linear-gradient(135deg,#09f,#0ff);transform:rotateY(180deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
+.f3{background:linear-gradient(135deg,#9f0,#ff0);transform:rotateY(90deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
+.f4{background:linear-gradient(135deg,#f00,#900);transform:rotateY(-90deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
+.f5{background:linear-gradient(135deg,#90f,#f0f);transform:rotateX(90deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
+.f6{background:linear-gradient(135deg,#0f9,#096);transform:rotateX(-90deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
+
+/* Site 10: Liquid */
+#site10{height:100vh;background:#0a0a2e;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.7;animation:float 10s infinite ease-in-out}
+.b1{width:clamp(300px,50vw,400px);height:clamp(300px,50vw,400px);background:#ff006e;top:-100px;left:-100px}
+.b2{width:clamp(400px,60vw,500px);height:clamp(400px,60vw,500px);background:#3a86ff;bottom:-150px;right:-150px;animation-delay:-3s}
+.b3{width:clamp(200px,40vw,300px);height:clamp(200px,40vw,300px);background:#8338ec;top:50%;left:50%;animation-delay:-6s}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(100px,-50px) scale(1.2)}66%{transform:translate(-50px,100px) scale(.9)}}
+.card{position:relative;background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);padding:clamp(30px,8vw,60px) clamp(40px,10vw,80px);border-radius:30px;color:#fff;text-align:center;z-index:10;max-width:90vw}
+.card h1{font-size:clamp(2.5rem,8vw,4rem);background:linear-gradient(90deg,#fff,#ff006e,#3a86ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.card p{font-size:clamp(1rem,3vw,1.2rem);opacity:.8;margin:20px 0}
+.card button{padding:15px 40px;background:#fff;color:#0a0a2e;border:none;border-radius:30px;font-weight:bold;cursor:pointer;font-size:1rem}
+
+/* Footer */
+footer{background:#000;padding:3rem 2rem;text-align:center;border-top:1px solid #222}
+footer a{color:#c06cff;text-decoration:none}
+
+/* Mobile */
+@media(max-width:768px){
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(10,10,10,.98);flex-direction:column;padding:1rem}
+  .nav-links.open{display:flex}
+  .menu-toggle{display:block}
+  .touch-controls{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px)}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">RAGA-VIBE</div>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#" onclick="showSection('home')" class="active">Home</a></li>
+    <li><a href="#" onclick="showSection('site1')">Raga</a></li>
+    <li><a href="#" onclick="showSection('site2')">Cosmic</a></li>
+    <li><a href="#" onclick="showSection('site3')">Snake</a></li>
+    <li><a href="#" onclick="showSection('site4')">Flow</a></li>
+    <li><a href="#" onclick="showSection('site5')">Zen</a></li>
+    <li><a href="#" onclick="showSection('site6')">Terminal</a></li>
+    <li><a href="#" onclick="showSection('site7')">Weather</a></li>
+    <li><a href="#" onclick="showSection('site8')">Poetry</a></li>
+    <li><a href="#" onclick="showSection('site9')">Cube</a></li>
+    <li><a href="#" onclick="showSection('site10')">Liquid</a></li>
+  </ul>
+</nav>
+
+<!-- Home -->
+<section id="home" class="section active">
+  <div class="hero">
+    <h1>RAGA-VIBE</h1>
+    <p>A collection of 10 creative experiments — from ambient music to cosmic drift, retro games to generative art.</p>
+    <a href="https://github.com/Raga-Vibe" target="_blank" class="github-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      View on GitHub
+    </a>
+  </div>
+</section>
+
+<!-- Site 1: Raga-Vibe -->
+<section id="site1" class="section">
+  <h2 class="section-title">🎵 Raga-Vibe</h2>
+  <canvas id="c1" width="500" height="150"></canvas>
+  <button onclick="playRaga()">▶ Play Tanpura Drone</button>
+</section>
+
+<!-- Site 2: Cosmic -->
+<section id="site2" class="section">
+  <div class="info">⟡ COSMIC DRIFT — click to warp ⟡</div>
+  <canvas id="c2"></canvas>
+</section>
+
+<!-- Site 3: Snake -->
+<section id="site3" class="section">
+  <h2 class="section-title">🕹️ Neon Snake</h2>
+  <canvas id="c3" width="400" height="400"></canvas>
+  <p style="color:#0ff;margin-top:1rem">Arrow keys to move</p>
+  <div class="touch-controls">
+    <div></div>
+    <button class="touch-btn" onclick="snakeDir(0,-1)">↑</button>
+    <div></div>
+    <button class="touch-btn" onclick="snakeDir(-1,0)">←</button>
+    <div></div>
+    <button class="touch-btn" onclick="snakeDir(1,0)">→</button>
+    <div></div>
+    <button class="touch-btn" onclick="snakeDir(0,1)">↓</button>
+    <div></div>
+  </div>
+</section>
+
+<!-- Site 4: Flow -->
+<section id="site4" class="section">
+  <canvas id="c4"></canvas>
+</section>
+
+<!-- Site 5: Zen -->
+<section id="site5" class="section">
+  <h2 class="section-title">🧘 Zen Timer</h2>
+  <div class="circle"></div>
+  <div id="phase">BREATHE IN</div>
+</section>
+
+<!-- Site 6: Terminal -->
+<section id="site6" class="section">
+  <h2 class="section-title" style="color:#0f0;-webkit-text-fill-color:#0f0">💾 Terminal</h2>
+  <div id="term"></div>
+  <span style="color:#0f0">&gt; <input id="cmd"></span>
+</section>
+
+<!-- Site 7: Weather -->
+<section id="site7" class="section">
+  <div id="scene"></div>
+  <div class="controls">
+    <div class="orb" style="background:linear-gradient(#87ceeb,#4682b4)" onclick="setMood('rain')"></div>
+    <div class="orb" style="background:linear-gradient(#fff,#cde)" onclick="setMood('snow')"></div>
+    <div class="orb" style="background:linear-gradient(#ffa,#f80)" onclick="setMood('sunny')"></div>
+    <div class="orb" style="background:linear-gradient(#fa0,#840)" onclick="setMood('autumn')"></div>
+  </div>
+</section>
+
+<!-- Site 8: Poetry -->
+<section id="site8" class="section">
+  <h2 class="section-title" style="color:#3a2a1a;-webkit-text-fill-color:#3a2a1a">✒️ Poetry Machine</h2>
+  <div id="poem">click below to begin</div>
+  <button onclick="generatePoem()">✦ new poem ✦</button>
+</section>
+
+<!-- Site 9: Cube -->
+<section id="site9" class="section">
+  <h2 class="section-title">🎲 3D Cube</h2>
+  <div class="scene" id="cube">
+    <div class="face f1">1</div><div class="face f2">2</div>
+    <div class="face f3">3</div><div class="face f4">4</div>
+    <div class="face f5">5</div><div class="face f6">6</div>
+  </div>
+</section>
+
+<!-- Site 10: Liquid -->
+<section id="site10" class="section">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="card">
+    <h1>Liquid.</h1>
+    <p>Design that flows.</p>
+    <button>Explore →</button>
+  </div>
+</section>
+
+<footer>
+  <p>Built with ❤️ by <a href="https://github.com/Raga-Vibe" target="_blank">Raga-Vibe</a></p>
+  <p style="margin-top: 0.5rem;">
+    <a href="https://x.com/RagaCrypt" target="_blank" style="color: #1DA1F2; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#1DA1F2"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      @RagaCrypt
+    </a>
+  </p>
+</footer>
+
+
+<script>
+// Navigation
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('navLinks').classList.remove('open');
+  window.scrollTo(0,0);
+}
+function toggleMenu(){
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+// Site 1: Raga
+const c1=document.getElementById('c1'),ctx1=c1.getContext('2d');
+let t1=0;
+function drawRaga(){
+  ctx1.fillStyle='rgba(0,0,0,.1)';ctx1.fillRect(0,0,c1.width,c1.height);
+  for(let i=0;i<3;i++){
+    ctx1.strokeStyle=`hsl(${(t1*2+i*60)%360},80%,60%)`;
+    ctx1.beginPath();
+    for(let x=0;x<c1.width;x++){
+      const y=c1.height/2+Math.sin(x*.02+t1*.05+i)*30*Math.sin(t1*.01);
+      x?ctx1.lineTo(x,y):ctx1.moveTo(x,y);
+    }
+    ctx1.stroke();
+  }
+  t1++;requestAnimationFrame(drawRaga);
+}
+drawRaga();
+let ctx2,osc;
+function playRaga(){
+  if(!ctx2){ctx2=new(window.AudioContext||window.webkitAudioContext)();osc=ctx2.createOscillator();osc.frequency.value=110;osc.type='sawtooth';const g=ctx2.createGain();g.gain.value=.05;osc.connect(g).connect(ctx2.destination);osc.start()}
+  else{ctx2.close();ctx2=null}
+}
+
+// Site 2: Cosmic
+const c2=document.getElementById('c2'),x2=c2.getContext('2d');
+function resizeC2(){c2.width=innerWidth;c2.height=innerHeight}
+resizeC2();onresize=resizeC2;
+let stars=[],mx=innerWidth/2,my=innerHeight/2,warp=1;
+for(let i=0;i<800;i++)stars.push({x:(Math.random()-.5)*c2.width*2,y:(Math.random()-.5)*c2.height*2,z:Math.random()*c2.width});
+c2.onmousemove=e=>{mx=e.clientX;my=e.clientY};
+c2.onclick=()=>warp=8;
+function drawCosmic(){
+  x2.fillStyle='rgba(0,0,10,.3)';x2.fillRect(0,0,c2.width,c2.height);
+  stars.forEach(s=>{
+    s.z-=warp;
+    if(s.z<1){s.z=c2.width;s.x=(Math.random()-.5)*c2.width*2;s.y=(Math.random()-.5)*c2.height*2}
+    const sx=(s.x/s.z)*c2.width/2+c2.width/2+(mx-c2.width/2)*.05;
+    const sy=(s.y/s.z)*c2.height/2+c2.height/2+(my-c2.height/2)*.05;
+    const r=(1-s.z/c2.width)*3;
+    x2.fillStyle=`hsl(${200+s.z/5},80%,${60+r*10}%)`;
+    x2.beginPath();x2.arc(sx,sy,r,0,7);x2.fill();
+  });
+  warp+=(1-warp)*.05;
+  requestAnimationFrame(drawCosmic);
+}
+drawCosmic();
+
+// Site 3: Snake
+const c3=document.getElementById('c3'),x3=c3.getContext('2d'),s3=20;
+let snake=[{x:10,y:10}],dir={x:1,y:0},food={x:5,y:5},score=0;
+function snakeDir(dx,dy){
+  if(dx===1&&dir.x===0)dir={x:1,y:0};
+  if(dx===-1&&dir.x===0)dir={x:-1,y:0};
+  if(dy===1&&dir.y===0)dir={x:0,y:1};
+  if(dy===-1&&dir.y===0)dir={x:0,y:-1};
+}
+onkeydown=e=>{
+  const k=e.key;
+  if(k==='ArrowUp')snakeDir(0,-1);
+  if(k==='ArrowDown')snakeDir(0,1);
+  if(k==='ArrowLeft')snakeDir(-1,0);
+  if(k==='ArrowRight')snakeDir(1,0);
+};
+setInterval(()=>{
+  if(!document.getElementById('site3').classList.contains('active'))return;
+  const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+  if(h.x<0||h.y<0||h.x>=20||h.y>=20||snake.some(p=>p.x===h.x&&p.y===h.y)){snake=[{x:10,y:10}];dir={x:1,y:0};score=0;return}
+  snake.unshift(h);
+  if(h.x===food.x&&h.y===food.y){score++;food={x:Math.floor(Math.random()*20),y:Math.floor(Math.random()*20)}}
+  else snake.pop();
+  x3.fillStyle='rgba(10,0,21,.4)';x3.fillRect(0,0,400,400);
+  x3.shadowBlur=15;x3.shadowColor='#0ff';
+  snake.forEach(p=>{x3.fillStyle='#0ff';x3.fillRect(p.x*s3,p.y*s3,s3-2,s3-2)});
+  x3.shadowColor='#f0f';x3.fillStyle='#f0f';x3.fillRect(food.x*s3,food.y*s3,s3-2,s3-2);
+  x3.shadowBlur=0;x3.fillStyle='#fff';x3.font='16px monospace';x3.fillText('SCORE: '+score,10,20);
+},100);
+
+// Site 4: Flow
+const c4=document.getElementById('c4');
+function resizeC4(){c4.width=innerWidth;c4.height=innerHeight;drawFlow()}
+function drawFlow(){
+  const x4=c4.getContext('2d');
+  x4.fillStyle='#111';x4.fillRect(0,0,c4.width,c4.height);
+  const seed=Math.random()*1000;
+  let hue=Math.random()*360;
+  function noise(a,b){return Math.sin(a*.01+seed)+Math.cos(b*.01+seed*.7)}
+  for(let i=0;i<500;i++){
+    let px=Math.random()*c4.width,py=Math.random()*c4.height;
+    x4.strokeStyle=`hsla(${hue+Math.random()*60},80%,60%,.3)`;
+    x4.beginPath();x4.moveTo(px,py);
+    for(let j=0;j<100;j++){
+      const a=noise(px,py)*Math.PI*2;
+      px+=Math.cos(a)*2;py+=Math.sin(a)*2;
+      x4.lineTo(px,py);
+    }
+    x4.stroke();
+  }
+}
+resizeC4();
+onresize=resizeC4;
+c4.onclick=e=>{
+  const x4=c4.getContext('2d');
+  for(let i=0;i<50;i++){
+    x4.fillStyle=`hsla(${Math.random()*360},90%,60%,.6)`;
+    x4.beginPath();x4.arc(e.clientX+Math.random()*40-20,e.clientY+Math.random()*40-20,Math.random()*5,0,7);x4.fill();
+  }
+};
+
+// Site 5: Zen
+const p5=document.getElementById('phase');
+const phases=[['BREATHE IN',4000],['HOLD',7000],['BREATHE OUT',8000]];
+let pi=0;
+function cycle(){
+  p5.textContent=phases[pi][0];
+  setTimeout(()=>{pi=(pi+1)%3;cycle()},phases[pi][1]);
+}
+cycle();
+
+// Site 6: Terminal
+const t6=document.getElementById('term');
+const lines=['[ SYSTEM BOOT v3.7.1 ]','> Initializing neural mesh...','> Bypassing firewall...','> Access granted.','> Welcome, operator.',''];
+let li=0;
+function type6(){
+  if(li<lines.length){t6.textContent+=lines[li]+'\n';li++;setTimeout(type6,400)}
+}
+type6();
+const cmd6=document.getElementById('cmd');
+cmd6.onkeydown=e=>{
+  if(e.key==='Enter'){
+    t6.textContent+='\n> '+cmd6.value+'\n';
+    const r=['ACCESS DENIED','DECRYPTING...','SIGNAL LOST','TRACE COMPLETE','404 SOUL NOT FOUND'][Math.floor(Math.random()*5)];
+    t6.textContent+='  → '+r+'\n';
+    cmd6.value='';
+  }
+};
+
+// Site 7: Weather
+const s7=document.getElementById('scene');let loop7;
+function setMood(m){
+  clearInterval(loop7);s7.innerHTML='';
+  const bgs={rain:'linear-gradient(#334,#112)',snow:'linear-gradient(#aac,#668)',sunny:'linear-gradient(#ffd,#fa0)',autumn:'linear-gradient(#f80,#630)'};
+  document.getElementById('site7').style.background=bgs[m];
+  loop7=setInterval(()=>{
+    const p=document.createElement('div');
+    if(m==='rain'){p.style.cssText=`left:${Math.random()*100}%;top:-20px;width:2px;height:20px;background:#8cf;position:absolute`;s7.appendChild(p);let y=-20;const i=setInterval(()=>{y+=15;p.style.top=y+'px';if(y>innerHeight){clearInterval(i);p.remove()}},30)}
+    if(m==='snow'){p.style.cssText=`left:${Math.random()*100}%;top:-20px;width:8px;height:8px;background:#fff;border-radius:50%;position:absolute`;s7.appendChild(p);let y=-20,x=parseFloat(p.style.left);const i=setInterval(()=>{y+=3;x+=Math.sin(y*.05)*.5;p.style.top=y+'px';p.style.left=x+'%';if(y>innerHeight){clearInterval(i);p.remove()}},30)}
+    if(m==='sunny'){p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:4px;height:4px;background:#fff;border-radius:50%;position:absolute;opacity:.5`;s7.appendChild(p);setTimeout(()=>p.remove(),2000)}
+    if(m==='autumn'){p.style.cssText=`left:${Math.random()*100}%;top:-20px;font-size:20px;position:absolute`;p.textContent='🍂';s7.appendChild(p);let y=-20;const i=setInterval(()=>{y+=4;p.style.top=y+'px';p.style.transform=`rotate(${y}deg)`;if(y>innerHeight){clearInterval(i);p.remove()}},40)}
+  },100);
+}
+setMood('rain');
+
+// Site 8: Poetry
+const a8=['whispering','silent','golden','ancient','forgotten','dancing','falling','burning','sleeping','waking'];
+const b8=['mountains','rivers','moonlight','shadows','petals','stars','dreams','memories','winds','flames'];
+const c8=['through my soul','in the dark','at dawn','without end','forevermore','like a sigh','beneath the sky','where time stands still','in the void','upon the breeze'];
+function r8(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function generatePoem(){
+  document.getElementById('poem').innerHTML=`${r8(a8)} ${r8(b8)}<br>${r8(b8)} ${r8(c8)}<br>${r8(a8)} ${r8(b8)}`;
+}
+
+// Site 9: Cube
+const cube=document.getElementById('cube');let rx=20,ry=30,drag=false,lx,ly;
+function startDrag(e){drag=true;const t=e.touches?e.touches[0]:e;lx=t.clientX;ly=t.clientY}
+function endDrag(){drag=false}
+function moveDrag(e){
+  if(!drag)return;
+  const t=e.touches?e.touches[0]:e;
+  ry+=(t.clientX-lx)*.5;rx-=(t.clientY-ly)*.5;
+  lx=t.clientX;ly=t.clientY;
+  cube.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;
+}
+cube.onmousedown=startDrag;
+cube.ontouchstart=startDrag;
+onmouseup=endDrag;
+ontouchend=endDrag;
+onmousemove=moveDrag;
+ontouchmove=moveDrag;
+cube.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;
+</script>
+
+</body>
+</html>
