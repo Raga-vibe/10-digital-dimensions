@@ -2,436 +2,776 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raga-Vibe | Creative Collection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Raga-Vibe Experiments</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#fff;overflow-x:hidden}
+  :root { --bg: #0a0a0f; --surface: #15151e; --primary: #00f0ff; --secondary: #bd00ff; --text: #e0e0e0; --text-dim: #888; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+  
+  .hub { padding: 2rem; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+  .hub-header { text-align: center; margin-bottom: 2rem; }
+  .hub-header h1 { font-size: 2rem; margin: 0 0 0.5rem 0; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hub-header p { color: var(--text-dim); margin: 0; }
+  
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+  .card { background: var(--surface); border: 1px solid #2a2a35; border-radius: 12px; padding: 1.5rem; cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
+  .card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: 0 8px 24px rgba(0, 240, 255, 0.1); }
+  .card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; color: #fff; }
+  .card-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.4; }
 
-/* Navigation */
-nav{position:fixed;top:0;left:0;right:0;background:rgba(10,10,10,.95);backdrop-filter:blur(10px);z-index:1000;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222}
-.logo{font-size:1.5rem;font-weight:bold;background:linear-gradient(90deg,#f5d76e,#ff6b9d,#c06cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.nav-links{display:flex;gap:1rem;list-style:none}
-.nav-links a{color:#aaa;text-decoration:none;padding:.5rem 1rem;border-radius:5px;transition:all .3s;font-size:.9rem}
-.nav-links a:hover,.nav-links a.active{color:#fff;background:rgba(255,255,255,.1)}
-.menu-toggle{display:none;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer}
+  .exp-view { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: none; flex-direction: column; animation: slideUp 0.3s ease; }
+  .exp-view.active { display: flex; }
+  .exp-header { display: flex; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid #2a2a35; background: var(--surface); }
+  .back-btn { background: transparent; border: 1px solid #444; color: var(--text); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; }
+  .back-btn:hover { background: #2a2a35; border-color: var(--primary); color: var(--primary); }
+  .exp-title { margin-left: 1rem; font-size: 1.2rem; font-weight: 600; }
+  .exp-stage { flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; width: 100%; }
+  
+  .footer { text-align: center; padding: 2rem; color: #555; font-size: 0.85rem; border-top: 1px solid #1a1a25; margin-top: 2rem; }
+  .footer a { color: var(--primary); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
 
-/* Hero */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;background:radial-gradient(circle at 50% 50%,#1a0033,#000)}
-.hero h1{font-size:clamp(3rem,8vw,6rem);background:linear-gradient(90deg,#f5d76e,#ff6b9d,#c06cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem}
-.hero p{font-size:clamp(1rem,3vw,1.5rem);color:#aaa;margin-bottom:2rem;max-width:600px}
-.github-btn{display:inline-flex;align-items:center;gap:.5rem;padding:1rem 2rem;background:linear-gradient(90deg,#ff6b9d,#c06cff);color:#fff;text-decoration:none;border-radius:30px;font-weight:bold;transition:transform .3s}
-.github-btn:hover{transform:scale(1.05)}
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-/* Sections */
-.section{min-height:100vh;padding:6rem 2rem 2rem;display:none}
-.section.active{display:block}
-.section-title{text-align:center;font-size:clamp(2rem,5vw,3rem);margin-bottom:2rem;background:linear-gradient(90deg,#0ff,#f0f);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-
-/* Site 1: Raga-Vibe */
-#site1{background:radial-gradient(circle at 50% 50%,#1a0033,#000);display:flex;flex-direction:column;align-items:center;justify-content:center}
-#site1 canvas{max-width:90vw;height:auto;border:1px solid #333;border-radius:10px;background:rgba(0,0,0,.5)}
-#site1 button{margin-top:1.5rem;padding:.8rem 2rem;background:linear-gradient(90deg,#ff6b9d,#c06cff);color:#fff;border:none;border-radius:30px;font-size:1rem;cursor:pointer}
-
-/* Site 2: Cosmic */
-#site2{background:#000;position:relative;overflow:hidden}
-#site2 canvas{position:absolute;inset:0;width:100%;height:100%}
-#site2 .info{position:absolute;top:100px;left:50%;transform:translateX(-50%);color:#88f;font-family:monospace;letter-spacing:3px;z-index:10;text-align:center}
-
-/* Site 3: Snake */
-#site3{background:#0a0015;display:flex;flex-direction:column;align-items:center;justify-content:center}
-#site3 canvas{max-width:90vw;max-height:60vh;width:400px;height:400px;border:2px solid #0ff;box-shadow:0 0 30px #0ff,inset 0 0 30px #0ff}
-.touch-controls{display:none;gap:1rem;margin-top:1rem}
-.touch-btn{width:60px;height:60px;background:rgba(0,255,255,.2);border:2px solid #0ff;border-radius:10px;color:#0ff;font-size:1.5rem;cursor:pointer}
-
-/* Site 4: Flow */
-#site4{background:#111;overflow:hidden}
-#site4 canvas{width:100%;height:100vh;display:block;cursor:pointer}
-
-/* Site 5: Zen */
-#site5{background:linear-gradient(180deg,#1a2a3a,#0a1520);display:flex;flex-direction:column;align-items:center;justify-content:center}
-.circle{width:clamp(100px,20vw,150px);height:clamp(100px,20vw,150px);border-radius:50%;background:radial-gradient(circle,#aee,#246);animation:breathe 19s infinite;box-shadow:0 0 60px #aee}
-@keyframes breathe{0%,100%{transform:scale(1)}21%{transform:scale(2.5)}58%{transform:scale(2.5)}100%{transform:scale(1)}}
-#phase{margin-top:40px;font-size:clamp(1.2rem,4vw,1.5rem);letter-spacing:5px;color:#aee}
-
-/* Site 6: Terminal */
-#site6{background:#000;padding-top:80px}
-#term{white-space:pre-wrap;line-height:1.6;color:#0f0;font-family:'Courier New',monospace;max-width:90vw;margin:0 auto}
-#cmd{background:transparent;border:none;color:#0f0;font-family:inherit;font-size:1rem;outline:none;width:80%;max-width:600px}
-
-/* Site 7: Weather */
-#site7{height:100vh;overflow:hidden;transition:background 1s;position:relative}
-#scene{position:absolute;inset:0}
-.controls{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:20px;z-index:10}
-.orb{width:clamp(50px,10vw,60px);height:clamp(50px,10vw,60px);border-radius:50%;cursor:pointer;transition:transform .3s;box-shadow:0 0 20px rgba(255,255,255,.5)}
-.orb:hover{transform:scale(1.2)}
-
-/* Site 8: Poetry */
-#site8{background:#f4ecd8;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#3a2a1a}
-#poem{font-size:clamp(1.3rem,4vw,1.8rem);text-align:center;line-height:2;min-height:200px;margin:40px 0;font-style:italic;padding:0 1rem}
-#site8 button{padding:15px 40px;background:#3a2a1a;color:#f4ecd8;border:none;font-family:inherit;font-size:1rem;cursor:pointer;letter-spacing:3px}
-
-/* Site 9: Cube */
-#site9{height:100vh;display:flex;align-items:center;justify-content:center;background:#222;perspective:1000px;cursor:grab}
-.scene{width:clamp(150px,40vw,200px);height:clamp(150px,40vw,200px);position:relative;transform-style:preserve-3d;transition:transform .1s}
-.face{position:absolute;width:100%;height:100%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:clamp(2rem,5vw,3rem);color:#fff}
-.f1{background:linear-gradient(135deg,#f09,#f90);transform:translateZ(calc(clamp(150px,40vw,200px)/2))}
-.f2{background:linear-gradient(135deg,#09f,#0ff);transform:rotateY(180deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
-.f3{background:linear-gradient(135deg,#9f0,#ff0);transform:rotateY(90deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
-.f4{background:linear-gradient(135deg,#f00,#900);transform:rotateY(-90deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
-.f5{background:linear-gradient(135deg,#90f,#f0f);transform:rotateX(90deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
-.f6{background:linear-gradient(135deg,#0f9,#096);transform:rotateX(-90deg) translateZ(calc(clamp(150px,40vw,200px)/2))}
-
-/* Site 10: Liquid */
-#site10{height:100vh;background:#0a0a2e;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.7;animation:float 10s infinite ease-in-out}
-.b1{width:clamp(300px,50vw,400px);height:clamp(300px,50vw,400px);background:#ff006e;top:-100px;left:-100px}
-.b2{width:clamp(400px,60vw,500px);height:clamp(400px,60vw,500px);background:#3a86ff;bottom:-150px;right:-150px;animation-delay:-3s}
-.b3{width:clamp(200px,40vw,300px);height:clamp(200px,40vw,300px);background:#8338ec;top:50%;left:50%;animation-delay:-6s}
-@keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(100px,-50px) scale(1.2)}66%{transform:translate(-50px,100px) scale(.9)}}
-.card{position:relative;background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);padding:clamp(30px,8vw,60px) clamp(40px,10vw,80px);border-radius:30px;color:#fff;text-align:center;z-index:10;max-width:90vw}
-.card h1{font-size:clamp(2.5rem,8vw,4rem);background:linear-gradient(90deg,#fff,#ff006e,#3a86ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.card p{font-size:clamp(1rem,3vw,1.2rem);opacity:.8;margin:20px 0}
-.card button{padding:15px 40px;background:#fff;color:#0a0a2e;border:none;border-radius:30px;font-weight:bold;cursor:pointer;font-size:1rem}
-
-/* Footer */
-footer{background:#000;padding:3rem 2rem;text-align:center;border-top:1px solid #222}
-footer a{color:#c06cff;text-decoration:none}
-
-/* Mobile */
-@media(max-width:768px){
-  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:rgba(10,10,10,.98);flex-direction:column;padding:1rem}
-  .nav-links.open{display:flex}
-  .menu-toggle{display:block}
-  .touch-controls{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px)}
-}
+  /* Utility for experiments */
+  .exp-canvas { touch-action: none; display: block; }
+  .exp-btn { background: var(--primary); color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 1rem; margin: 0.5rem; transition: opacity 0.2s; }
+  .exp-btn:hover { opacity: 0.9; }
+  .exp-input { background: #222; border: 1px solid #444; color: #fff; padding: 0.5rem; border-radius: 4px; width: 100%; max-width: 300px; margin: 0.5rem 0; }
+  .exp-textarea { background: #222; border: 1px solid #444; color: #fff; padding: 0.5rem; border-radius: 4px; width: 100%; max-width: 500px; height: 150px; margin: 0.5rem 0; font-family: monospace; resize: vertical; }
+  .exp-slider { width: 100%; max-width: 300px; margin: 1rem 0; accent-color: var(--primary); }
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="logo">RAGA-VIBE</div>
-  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-  <ul class="nav-links" id="navLinks">
-    <li><a href="#" onclick="showSection('home')" class="active">Home</a></li>
-    <li><a href="#" onclick="showSection('site1')">Raga</a></li>
-    <li><a href="#" onclick="showSection('site2')">Cosmic</a></li>
-    <li><a href="#" onclick="showSection('site3')">Snake</a></li>
-    <li><a href="#" onclick="showSection('site4')">Flow</a></li>
-    <li><a href="#" onclick="showSection('site5')">Zen</a></li>
-    <li><a href="#" onclick="showSection('site6')">Terminal</a></li>
-    <li><a href="#" onclick="showSection('site7')">Weather</a></li>
-    <li><a href="#" onclick="showSection('site8')">Poetry</a></li>
-    <li><a href="#" onclick="showSection('site9')">Cube</a></li>
-    <li><a href="#" onclick="showSection('site10')">Liquid</a></li>
-  </ul>
-</nav>
-
-<!-- Home -->
-<section id="home" class="section active">
-  <div class="hero">
-    <h1>RAGA-VIBE</h1>
-    <p>A collection of 10 creative experiments — from ambient music to cosmic drift, retro games to generative art.</p>
-    <a href="https://github.com/Raga-Vibe" target="_blank" class="github-btn">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      View on GitHub
-    </a>
+<div id="hub" class="hub">
+  <div class="hub-header">
+    <h1>Raga-Vibe Experiments</h1>
+    <p>30 Interactive Creative Tools & Simulations</p>
   </div>
-</section>
-
-<!-- Site 1: Raga-Vibe -->
-<section id="site1" class="section">
-  <h2 class="section-title">🎵 Raga-Vibe</h2>
-  <canvas id="c1" width="500" height="150"></canvas>
-  <button onclick="playRaga()">▶ Play Tanpura Drone</button>
-</section>
-
-<!-- Site 2: Cosmic -->
-<section id="site2" class="section">
-  <div class="info">⟡ COSMIC DRIFT — click to warp ⟡</div>
-  <canvas id="c2"></canvas>
-</section>
-
-<!-- Site 3: Snake -->
-<section id="site3" class="section">
-  <h2 class="section-title">🕹️ Neon Snake</h2>
-  <canvas id="c3" width="400" height="400"></canvas>
-  <p style="color:#0ff;margin-top:1rem">Arrow keys to move</p>
-  <div class="touch-controls">
-    <div></div>
-    <button class="touch-btn" onclick="snakeDir(0,-1)">↑</button>
-    <div></div>
-    <button class="touch-btn" onclick="snakeDir(-1,0)">←</button>
-    <div></div>
-    <button class="touch-btn" onclick="snakeDir(1,0)">→</button>
-    <div></div>
-    <button class="touch-btn" onclick="snakeDir(0,1)">↓</button>
-    <div></div>
+  <div class="grid" id="card-grid"></div>
+  <div class="footer">
+    Crafted by <strong>Raga-Vibe</strong> &bull; <a href="https://github.com/Raga-Vibe" target="_blank">github.com/Raga-Vibe</a> &bull; <a href="https://twitter.com/RagaCrypt" target="_blank">@RagaCrypt</a>
   </div>
-</section>
+</div>
 
-<!-- Site 4: Flow -->
-<section id="site4" class="section">
-  <canvas id="c4"></canvas>
-</section>
-
-<!-- Site 5: Zen -->
-<section id="site5" class="section">
-  <h2 class="section-title">🧘 Zen Timer</h2>
-  <div class="circle"></div>
-  <div id="phase">BREATHE IN</div>
-</section>
-
-<!-- Site 6: Terminal -->
-<section id="site6" class="section">
-  <h2 class="section-title" style="color:#0f0;-webkit-text-fill-color:#0f0">💾 Terminal</h2>
-  <div id="term"></div>
-  <span style="color:#0f0">&gt; <input id="cmd"></span>
-</section>
-
-<!-- Site 7: Weather -->
-<section id="site7" class="section">
-  <div id="scene"></div>
-  <div class="controls">
-    <div class="orb" style="background:linear-gradient(#87ceeb,#4682b4)" onclick="setMood('rain')"></div>
-    <div class="orb" style="background:linear-gradient(#fff,#cde)" onclick="setMood('snow')"></div>
-    <div class="orb" style="background:linear-gradient(#ffa,#f80)" onclick="setMood('sunny')"></div>
-    <div class="orb" style="background:linear-gradient(#fa0,#840)" onclick="setMood('autumn')"></div>
+<div id="exp-view" class="exp-view">
+  <div class="exp-header">
+    <button class="back-btn" onclick="App.close()">← Back</button>
+    <div class="exp-title" id="exp-title">Experiment</div>
   </div>
-</section>
-
-<!-- Site 8: Poetry -->
-<section id="site8" class="section">
-  <h2 class="section-title" style="color:#3a2a1a;-webkit-text-fill-color:#3a2a1a">✒️ Poetry Machine</h2>
-  <div id="poem">click below to begin</div>
-  <button onclick="generatePoem()">✦ new poem ✦</button>
-</section>
-
-<!-- Site 9: Cube -->
-<section id="site9" class="section">
-  <h2 class="section-title">🎲 3D Cube</h2>
-  <div class="scene" id="cube">
-    <div class="face f1">1</div><div class="face f2">2</div>
-    <div class="face f3">3</div><div class="face f4">4</div>
-    <div class="face f5">5</div><div class="face f6">6</div>
-  </div>
-</section>
-
-<!-- Site 10: Liquid -->
-<section id="site10" class="section">
-  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-  <div class="card">
-    <h1>Liquid.</h1>
-    <p>Design that flows.</p>
-    <button>Explore →</button>
-  </div>
-</section>
-
-<footer>
-  <p>Built with ❤️ by <a href="https://github.com/Raga-Vibe" target="_blank">Raga-Vibe</a></p>
-  <p style="margin-top: 0.5rem;">
-    <a href="https://x.com/RagaCrypt" target="_blank" style="color: #1DA1F2; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="#1DA1F2"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      @RagaCrypt
-    </a>
-  </p>
-</footer>
-
+  <div class="exp-stage" id="exp-stage"></div>
+</div>
 
 <script>
-// Navigation
-function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('navLinks').classList.remove('open');
-  window.scrollTo(0,0);
-}
-function toggleMenu(){
-  document.getElementById('navLinks').classList.toggle('open');
-}
+const $ = (sel) => document.querySelector(sel);
+const App = {
+  currentCleanup: null,
+  open(id) {
+    const exp = experiments.find(e => e.id === id);
+    if (!exp) return;
+    $('#hub').style.display = 'none';
+    $('#exp-view').classList.add('active');
+    $('#exp-title').textContent = exp.title;
+    const stage = $('#exp-stage');
+    stage.innerHTML = '';
+    this.currentCleanup = exp.init(stage);
+    window.location.hash = `exp-${id}`;
+  },
+  close() {
+    if (this.currentCleanup) this.currentCleanup();
+    this.currentCleanup = null;
+    $('#exp-stage').innerHTML = '';
+    $('#exp-view').classList.remove('active');
+    $('#hub').style.display = 'block';
+    window.location.hash = '';
+  }
+};
 
-// Site 1: Raga
-const c1=document.getElementById('c1'),ctx1=c1.getContext('2d');
-let t1=0;
-function drawRaga(){
-  ctx1.fillStyle='rgba(0,0,0,.1)';ctx1.fillRect(0,0,c1.width,c1.height);
-  for(let i=0;i<3;i++){
-    ctx1.strokeStyle=`hsl(${(t1*2+i*60)%360},80%,60%)`;
-    ctx1.beginPath();
-    for(let x=0;x<c1.width;x++){
-      const y=c1.height/2+Math.sin(x*.02+t1*.05+i)*30*Math.sin(t1*.01);
-      x?ctx1.lineTo(x,y):ctx1.moveTo(x,y);
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash;
+  if (hash.startsWith('#exp-')) {
+    const id = parseInt(hash.split('-')[1]);
+    if (!$('#exp-view').classList.contains('active')) App.open(id);
+  } else {
+    if ($('#exp-view').classList.contains('active')) App.close();
+  }
+});
+
+const experiments = [
+  { id: 1, title: "Particle Gravity", icon: "🌌", desc: "Move your cursor to attract glowing particles.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let pts = [], mx = canvas.width/2, my = canvas.height/2;
+      for(let i=0;i<150;i++) pts.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx:0, vy:0});
+      const move = e => { const r = canvas.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; };
+      canvas.addEventListener('mousemove', move); canvas.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0]); }, {passive:false});
+      let anim; const loop = () => {
+        ctx.fillStyle = 'rgba(10,10,15,0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        pts.forEach(p => {
+          let dx = mx - p.x, dy = my - p.y, dist = Math.sqrt(dx*dx+dy*dy) || 1;
+          p.vx += (dx/dist)*0.8; p.vy += (dy/dist)*0.8; p.vx *= 0.92; p.vy *= 0.92;
+          p.x += p.vx; p.y += p.vy;
+          ctx.fillStyle = `hsl(${dist*2}, 100%, 60%)`; ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2); ctx.fill();
+        });
+        anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); canvas.remove(); };
     }
-    ctx1.stroke();
-  }
-  t1++;requestAnimationFrame(drawRaga);
-}
-drawRaga();
-let ctx2,osc;
-function playRaga(){
-  if(!ctx2){ctx2=new(window.AudioContext||window.webkitAudioContext)();osc=ctx2.createOscillator();osc.frequency.value=110;osc.type='sawtooth';const g=ctx2.createGain();g.gain.value=.05;osc.connect(g).connect(ctx2.destination);osc.start()}
-  else{ctx2.close();ctx2=null}
-}
-
-// Site 2: Cosmic
-const c2=document.getElementById('c2'),x2=c2.getContext('2d');
-function resizeC2(){c2.width=innerWidth;c2.height=innerHeight}
-resizeC2();onresize=resizeC2;
-let stars=[],mx=innerWidth/2,my=innerHeight/2,warp=1;
-for(let i=0;i<800;i++)stars.push({x:(Math.random()-.5)*c2.width*2,y:(Math.random()-.5)*c2.height*2,z:Math.random()*c2.width});
-c2.onmousemove=e=>{mx=e.clientX;my=e.clientY};
-c2.onclick=()=>warp=8;
-function drawCosmic(){
-  x2.fillStyle='rgba(0,0,10,.3)';x2.fillRect(0,0,c2.width,c2.height);
-  stars.forEach(s=>{
-    s.z-=warp;
-    if(s.z<1){s.z=c2.width;s.x=(Math.random()-.5)*c2.width*2;s.y=(Math.random()-.5)*c2.height*2}
-    const sx=(s.x/s.z)*c2.width/2+c2.width/2+(mx-c2.width/2)*.05;
-    const sy=(s.y/s.z)*c2.height/2+c2.height/2+(my-c2.height/2)*.05;
-    const r=(1-s.z/c2.width)*3;
-    x2.fillStyle=`hsl(${200+s.z/5},80%,${60+r*10}%)`;
-    x2.beginPath();x2.arc(sx,sy,r,0,7);x2.fill();
-  });
-  warp+=(1-warp)*.05;
-  requestAnimationFrame(drawCosmic);
-}
-drawCosmic();
-
-// Site 3: Snake
-const c3=document.getElementById('c3'),x3=c3.getContext('2d'),s3=20;
-let snake=[{x:10,y:10}],dir={x:1,y:0},food={x:5,y:5},score=0;
-function snakeDir(dx,dy){
-  if(dx===1&&dir.x===0)dir={x:1,y:0};
-  if(dx===-1&&dir.x===0)dir={x:-1,y:0};
-  if(dy===1&&dir.y===0)dir={x:0,y:1};
-  if(dy===-1&&dir.y===0)dir={x:0,y:-1};
-}
-onkeydown=e=>{
-  const k=e.key;
-  if(k==='ArrowUp')snakeDir(0,-1);
-  if(k==='ArrowDown')snakeDir(0,1);
-  if(k==='ArrowLeft')snakeDir(-1,0);
-  if(k==='ArrowRight')snakeDir(1,0);
-};
-setInterval(()=>{
-  if(!document.getElementById('site3').classList.contains('active'))return;
-  const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
-  if(h.x<0||h.y<0||h.x>=20||h.y>=20||snake.some(p=>p.x===h.x&&p.y===h.y)){snake=[{x:10,y:10}];dir={x:1,y:0};score=0;return}
-  snake.unshift(h);
-  if(h.x===food.x&&h.y===food.y){score++;food={x:Math.floor(Math.random()*20),y:Math.floor(Math.random()*20)}}
-  else snake.pop();
-  x3.fillStyle='rgba(10,0,21,.4)';x3.fillRect(0,0,400,400);
-  x3.shadowBlur=15;x3.shadowColor='#0ff';
-  snake.forEach(p=>{x3.fillStyle='#0ff';x3.fillRect(p.x*s3,p.y*s3,s3-2,s3-2)});
-  x3.shadowColor='#f0f';x3.fillStyle='#f0f';x3.fillRect(food.x*s3,food.y*s3,s3-2,s3-2);
-  x3.shadowBlur=0;x3.fillStyle='#fff';x3.font='16px monospace';x3.fillText('SCORE: '+score,10,20);
-},100);
-
-// Site 4: Flow
-const c4=document.getElementById('c4');
-function resizeC4(){c4.width=innerWidth;c4.height=innerHeight;drawFlow()}
-function drawFlow(){
-  const x4=c4.getContext('2d');
-  x4.fillStyle='#111';x4.fillRect(0,0,c4.width,c4.height);
-  const seed=Math.random()*1000;
-  let hue=Math.random()*360;
-  function noise(a,b){return Math.sin(a*.01+seed)+Math.cos(b*.01+seed*.7)}
-  for(let i=0;i<500;i++){
-    let px=Math.random()*c4.width,py=Math.random()*c4.height;
-    x4.strokeStyle=`hsla(${hue+Math.random()*60},80%,60%,.3)`;
-    x4.beginPath();x4.moveTo(px,py);
-    for(let j=0;j<100;j++){
-      const a=noise(px,py)*Math.PI*2;
-      px+=Math.cos(a)*2;py+=Math.sin(a)*2;
-      x4.lineTo(px,py);
+  },
+  { id: 2, title: "Neon Synth", icon: "🎹", desc: "Touch or click keys to play web audio tones.",
+    init: (c) => {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;height:60%;width:90%;gap:4px;";
+      const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+      notes.forEach((freq) => {
+        const key = document.createElement('div');
+        key.style.cssText = "flex:1; background:#222; border-radius:4px; cursor:pointer; transition:background 0.1s; border:1px solid #333;";
+        const play = () => {
+          if(ctx.state === 'suspended') ctx.resume();
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = freq; gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+          osc.start(); osc.stop(ctx.currentTime + 0.5);
+          key.style.background = '#00f0ff'; setTimeout(() => key.style.background = '#222', 200);
+        };
+        key.addEventListener('mousedown', play); key.addEventListener('touchstart', (e)=>{e.preventDefault(); play();}, {passive:false});
+        wrap.appendChild(key);
+      });
+      c.appendChild(wrap);
+      return () => { ctx.close(); wrap.remove(); };
     }
-    x4.stroke();
+  },
+  { id: 3, title: "Game of Life", icon: "🦠", desc: "Classic cellular automaton. Click to toggle cells.",
+    init: (c) => {
+      const size = 15, cols = Math.floor(c.clientWidth/size), rows = Math.floor(c.clientHeight/size);
+      let grid = Array(cols).fill().map(() => Array(rows).fill(0).map(() => Math.random() > 0.85 ? 1 : 0));
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = cols*size; canvas.height = rows*size; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      const draw = () => {
+        ctx.fillStyle = '#0a0a0f'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = '#00ff9d';
+        for(let i=0; i<cols; i++) for(let j=0; j<rows; j++) if(grid[i][j]) ctx.fillRect(i*size, j*size, size-1, size-1);
+      };
+      const update = () => {
+        const next = Array(cols).fill().map(() => Array(rows).fill(0));
+        for(let i=0; i<cols; i++) for(let j=0; j<rows; j++) {
+          let n = 0;
+          for(let x=-1; x<=1; x++) for(let y=-1; y<=1; y++) {
+            if(x===0 && y===0) continue;
+            n += grid[(i+x+cols)%cols][(j+y+rows)%rows];
+          }
+          next[i][j] = grid[i][j] ? (n===2 || n===3 ? 1 : 0) : (n===3 ? 1 : 0);
+        }
+        grid = next; draw();
+      };
+      const interval = setInterval(update, 80); draw();
+      const click = e => {
+        const r = canvas.getBoundingClientRect();
+        grid[Math.floor((e.clientX - r.left)/size)][Math.floor((e.clientY - r.top)/size)] ^= 1; draw();
+      };
+      canvas.addEventListener('click', click);
+      return () => { clearInterval(interval); canvas.removeEventListener('click', click); canvas.remove(); };
+    }
+  },
+  { id: 4, title: "Breathing Guide", icon: "🧘", desc: "Ambient animation for relaxation and focus.",
+    init: (c) => {
+      const div = document.createElement('div'); div.style.cssText = "display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;";
+      const circle = document.createElement('div'); circle.style.cssText = "width:120px;height:120px;border-radius:50%;background:#bd00ff;transition:transform 4s ease-in-out, background 4s;box-shadow:0 0 30px rgba(189,0,255,0.3);";
+      const text = document.createElement('div'); text.style.cssText = "margin-top:2rem;color:#fff;font-size:1.5rem;font-weight:300;letter-spacing:2px;";
+      div.appendChild(circle); div.appendChild(text); c.appendChild(div);
+      let active = true, state = 0, timer;
+      const cycle = () => {
+        if(!active) return;
+        if(state === 0) { circle.style.transform = "scale(2.2)"; circle.style.background = "#00f0ff"; text.textContent = "Breathe In"; state = 1; timer = setTimeout(cycle, 4000); }
+        else if(state === 1) { text.textContent = "Hold"; state = 2; timer = setTimeout(cycle, 2000); }
+        else { circle.style.transform = "scale(1)"; circle.style.background = "#bd00ff"; text.textContent = "Breathe Out"; state = 0; timer = setTimeout(cycle, 4000); }
+      };
+      cycle();
+      return () => { active = false; clearTimeout(timer); div.remove(); };
+    }
+  },
+  { id: 5, title: "Typing Rain", icon: "⌨️", desc: "Type on your keyboard to spawn falling characters.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let drops = [];
+      const onKey = e => {
+        drops.push({x: Math.random()*canvas.width, y: 0, char: e.key.length === 1 ? e.key : String.fromCharCode(65+Math.random()*26), speed: 2+Math.random()*3, color: `hsl(${Math.random()*360},80%,60%)`});
+      };
+      window.addEventListener('keydown', onKey);
+      let anim; const loop = () => {
+        ctx.fillStyle = 'rgba(10,10,15,0.3)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.font = '16px monospace';
+        drops = drops.filter(d => {
+          d.y += d.speed;
+          ctx.fillStyle = d.color; ctx.fillText(d.char, d.x, d.y);
+          return d.y < canvas.height;
+        });
+        anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); window.removeEventListener('keydown', onKey); canvas.remove(); };
+    }
+  },
+  { id: 6, title: "Fractal Tree", icon: "🌳", desc: "Adjust the slider to grow a recursive fractal tree.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;width:100%;height:100%;";
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = Math.min(500, c.clientWidth); canvas.height = Math.min(500, c.clientHeight); wrap.appendChild(canvas);
+      const slider = document.createElement('input'); slider.type = 'range'; slider.min = '10'; slider.max = '45'; slider.value = '25'; slider.className = 'exp-slider'; wrap.appendChild(slider);
+      const ctx = canvas.getContext('2d');
+      const draw = () => {
+        ctx.fillStyle = '#0a0a0f'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        const branch = (x, y, len, angle, depth) => {
+          if(depth === 0) return;
+          const ex = x + len * Math.cos(angle), ey = y + len * Math.sin(angle);
+          ctx.strokeStyle = `hsl(${120 + depth*10}, 70%, ${50 + depth*5}%)`; ctx.lineWidth = depth * 0.8;
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(ex, ey); ctx.stroke();
+          const ang = parseFloat(slider.value) * Math.PI / 180;
+          branch(ex, ey, len * 0.7, angle - ang, depth - 1);
+          branch(ex, ey, len * 0.7, angle + ang, depth - 1);
+        };
+        branch(canvas.width/2, canvas.height, canvas.height/4, -Math.PI/2, 10);
+      };
+      slider.addEventListener('input', draw); draw();
+      return () => { wrap.remove(); };
+    }
+  },
+  { id: 7, title: "Color Mixer", icon: "🎨", desc: "Mix RGB values to find your perfect hex color.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;gap:1rem;";
+      const preview = document.createElement('div'); preview.style.cssText = "width:200px;height:200px;border-radius:12px;border:2px solid #333;transition:background 0.2s;";
+      const hex = document.createElement('div'); hex.style.cssText = "font-size:1.5rem;font-family:monospace;color:#fff;";
+      wrap.appendChild(preview); wrap.appendChild(hex);
+      ['red','green','blue'].forEach((color, i) => {
+        const row = document.createElement('div'); row.style.cssText = "display:flex;align-items:center;gap:10px;width:300px;";
+        const label = document.createElement('span'); label.textContent = color[0].toUpperCase(); label.style.cssText = "width:20px;color:#fff;";
+        const input = document.createElement('input'); input.type = 'range'; input.min = 0; input.max = 255; input.value = 128; input.className = 'exp-slider'; input.style.margin = '0'; input.style.flex = '1';
+        input.dataset.channel = color;
+        const val = document.createElement('span'); val.style.cssText = "width:30px;text-align:right;color:#888;"; val.textContent = input.value;
+        input.addEventListener('input', () => { val.textContent = input.value; update(); });
+        row.append(label, input, val); wrap.appendChild(row);
+      });
+      c.appendChild(wrap);
+      const update = () => {
+        const r = wrap.querySelector('[data-channel=red]').value;
+        const g = wrap.querySelector('[data-channel=green]').value;
+        const b = wrap.querySelector('[data-channel=blue]').value;
+        const hexStr = `#${[r,g,b].map(x=>parseInt(x).toString(16).padStart(2,'0')).join('')}`;
+        preview.style.background = `rgb(${r},${g},${b})`; hex.textContent = hexStr.toUpperCase();
+      };
+      update();
+      return () => { wrap.remove(); };
+    }
+  },
+  { id: 8, title: "Bouncing Logo", icon: "📀", desc: "The classic screensaver, bouncing endlessly.",
+    init: (c) => {
+      const el = document.createElement('div'); el.textContent = 'RAGA'; el.style.cssText = "position:absolute;font-weight:900;font-size:2rem;color:#00f0ff;white-space:nowrap;";
+      c.appendChild(el);
+      let x = 10, y = 10, dx = 3, dy = 3;
+      const colors = ['#00f0ff', '#bd00ff', '#00ff9d', '#ff0055', '#ffff00'];
+      let anim; const loop = () => {
+        const w = c.clientWidth, h = c.clientHeight, ew = el.offsetWidth, eh = el.offsetHeight;
+        if(x <= 0 || x + ew >= w) { dx = -dx; el.style.color = colors[Math.floor(Math.random()*colors.length)]; }
+        if(y <= 0 || y + eh >= h) { dy = -dy; el.style.color = colors[Math.floor(Math.random()*colors.length)]; }
+        x += dx; y += dy;
+        el.style.transform = `translate(${x}px, ${y}px)`;
+        anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); el.remove(); };
+    }
+  },
+  { id: 9, title: "Reaction Time", icon: "⚡", desc: "Click as fast as you can when the screen turns green.",
+    init: (c) => {
+      const el = document.createElement('div'); el.style.cssText = "width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;background:#222;color:#fff;font-size:1.5rem;text-align:center;padding:2rem;";
+      el.innerHTML = "<div>Click to Start</div>"; c.appendChild(el);
+      let state = 'idle', start, timeout;
+      const click = () => {
+        if(state === 'idle') {
+          state = 'waiting'; el.style.background = '#bd00ff'; el.innerHTML = "<div>Wait for Green...</div>";
+          timeout = setTimeout(() => { state = 'ready'; start = Date.now(); el.style.background = '#00ff9d'; el.innerHTML = "<div>CLICK NOW!</div>"; }, 1000 + Math.random()*3000);
+        } else if(state === 'waiting') {
+          clearTimeout(timeout); state = 'idle'; el.style.background = '#ff0055'; el.innerHTML = "<div>Too Early! Click to retry.</div>";
+        } else if(state === 'ready') {
+          const ms = Date.now() - start; state = 'idle'; el.style.background = '#222'; el.innerHTML = `<div>${ms} ms</div><div style='font-size:1rem;margin-top:1rem;color:#888'>Click to retry</div>`;
+        }
+      };
+      el.addEventListener('click', click);
+      return () => { clearTimeout(timeout); el.removeEventListener('click', click); el.remove(); };
+    }
+  },
+  { id: 10, title: "Maze Generator", icon: "🕸️", desc: "Procedurally generated maze using recursive backtracking.",
+    init: (c) => {
+      const size = 20, cols = Math.floor(c.clientWidth/size), rows = Math.floor(c.clientHeight/size);
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = cols*size; canvas.height = rows*size; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+      const grid = Array(cols).fill().map(() => Array(rows).fill().map(() => ({top:true, right:true, bottom:true, left:true, visited:false})));
+      const stack = [{x:0, y:0}]; grid[0][0].visited = true;
+      while(stack.length > 0) {
+        const curr = stack[stack.length-1];
+        const neighbors = [];
+        [[0,-1],[1,0],[0,1],[-1,0]].forEach(([dx,dy], i) => {
+          const nx = curr.x+dx, ny = curr.y+dy;
+          if(nx>=0 && nx<cols && ny>=0 && ny<rows && !grid[nx][ny].visited) neighbors.push({x:nx, y:ny, dir:i});
+        });
+        if(neighbors.length > 0) {
+          const next = neighbors[Math.floor(Math.random()*neighbors.length)];
+          grid[curr.x][curr.y][['top','right','bottom','left'][next.dir]] = false;
+          grid[next.x][next.y][['bottom','left','top','right'][next.dir]] = false;
+          grid[next.x][next.y].visited = true;
+          stack.push({x:next.x, y:next.y});
+        } else { stack.pop(); }
+      }
+      ctx.strokeStyle = '#00f0ff'; ctx.lineWidth = 2; ctx.beginPath();
+      for(let x=0; x<cols; x++) for(let y=0; y<rows; y++) {
+        const cx = x*size, cy = y*size;
+        if(grid[x][y].top) { ctx.moveTo(cx, cy); ctx.lineTo(cx+size, cy); }
+        if(grid[x][y].right) { ctx.moveTo(cx+size, cy); ctx.lineTo(cx+size, cy+size); }
+        if(grid[x][y].bottom) { ctx.moveTo(cx, cy+size); ctx.lineTo(cx+size, cy+size); }
+        if(grid[x][y].left) { ctx.moveTo(cx, cy); ctx.lineTo(cx, cy+size); }
+      }
+      ctx.stroke();
+      return () => { canvas.remove(); };
+    }
+  },
+  { id: 11, title: "Wave Visualizer", icon: "🌊", desc: "Move your mouse to modulate sine wave frequencies.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let mx = 0.5, my = 0.5;
+      const move = e => { const r = canvas.getBoundingClientRect(); mx = (e.clientX - r.left)/canvas.width; my = (e.clientY - r.top)/canvas.height; };
+      canvas.addEventListener('mousemove', move); canvas.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0]); }, {passive:false});
+      let time = 0, anim;
+      const loop = () => {
+        ctx.fillStyle = 'rgba(10,10,15,0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.beginPath(); ctx.strokeStyle = `hsl(${time*50}, 80%, 60%)`; ctx.lineWidth = 3;
+        for(let x=0; x<canvas.width; x+=5) {
+          const y = canvas.height/2 + Math.sin(x*0.01 + time*2) * (my * 150) + Math.sin(x*0.02 - time) * (mx * 50);
+          x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+        }
+        ctx.stroke(); time += 0.05; anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); canvas.remove(); };
+    }
+  },
+  { id: 12, title: "Gravity Balls", icon: "🎱", desc: "Click or tap to spawn bouncing physics balls.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let balls = [];
+      const spawn = e => {
+        const r = canvas.getBoundingClientRect();
+        for(let i=0;i<5;i++) balls.push({x: e.clientX-r.left, y: e.clientY-r.top, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, r: 5+Math.random()*10, color: `hsl(${Math.random()*360},80%,60%)`});
+      };
+      canvas.addEventListener('mousedown', spawn); canvas.addEventListener('touchstart', e => { e.preventDefault(); spawn(e.touches[0]); }, {passive:false});
+      let anim; const loop = () => {
+        ctx.fillStyle = 'rgba(10,10,15,0.3)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        balls.forEach(b => {
+          b.vy += 0.5; b.x += b.vx; b.y += b.vy;
+          if(b.y + b.r > canvas.height) { b.y = canvas.height - b.r; b.vy *= -0.7; }
+          if(b.x - b.r < 0 || b.x + b.r > canvas.width) b.vx *= -0.8;
+          ctx.fillStyle = b.color; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+        });
+        anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); canvas.remove(); };
+    }
+  },
+  { id: 13, title: "Pixel Art", icon: "👾", desc: "Click and drag to paint on a 16x16 grid.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;gap:1rem;";
+      const grid = document.createElement('div'); grid.style.cssText = `display:grid;grid-template-columns:repeat(16,1fr);gap:1px;background:#333;border:2px solid #444;width:${Math.min(400, c.clientWidth-40)}px;height:${Math.min(400, c.clientWidth-40)}px;`;
+      const cells = [];
+      for(let i=0;i<256;i++) {
+        const cell = document.createElement('div'); cell.style.background = '#0a0a0f'; cell.style.cursor = 'pointer';
+        cell.addEventListener('mousedown', () => { isDrawing = true; cell.style.background = color; });
+        cell.addEventListener('mouseover', () => { if(isDrawing) cell.style.background = color; });
+        cells.push(cell); grid.appendChild(cell);
+      }
+      let isDrawing = false, color = '#00f0ff';
+      window.addEventListener('mouseup', () => isDrawing = false);
+      const picker = document.createElement('input'); picker.type = 'color'; picker.value = color; picker.style.cssText = "width:50px;height:40px;border:none;background:none;cursor:pointer;";
+      picker.addEventListener('input', e => color = e.target.value);
+      const clearBtn = document.createElement('button'); clearBtn.textContent = 'Clear'; clearBtn.className = 'exp-btn'; clearBtn.style.padding = '0.5rem 1rem';
+      clearBtn.addEventListener('click', () => cells.forEach(cell => cell.style.background = '#0a0a0f'));
+      wrap.append(picker, grid, clearBtn); c.appendChild(wrap);
+      return () => { window.removeEventListener('mouseup', () => isDrawing = false); wrap.remove(); };
+    }
+  },
+  { id: 14, title: "Retro Typewriter", icon: "📝", desc: "A minimalist, distraction-free writing space.",
+    init: (c) => {
+      const area = document.createElement('textarea'); area.className = 'exp-textarea'; area.style.height = '80%'; area.style.maxWidth = '600px'; area.style.fontSize = '1.1rem'; area.style.lineHeight = '1.6'; area.style.background = '#111'; area.style.color = '#00ff9d'; area.placeholder = "Start typing your masterpiece...";
+      c.appendChild(area); area.focus();
+      return () => { area.remove(); };
+    }
+  },
+  { id: 15, title: "Pendulum Wave", icon: "🕰️", desc: "Mesmerizing harmonic motion of varying pendulum lengths.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let time = 0, anim;
+      const loop = () => {
+        ctx.fillStyle = '#0a0a0f'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        const cx = canvas.width/2, cy = 50;
+        for(let i=0; i<15; i++) {
+          const len = 100 + i * 15;
+          const angle = Math.sin(time * (0.5 + i * 0.05)) * 0.5;
+          const px = cx + Math.sin(angle) * len, py = cy + Math.cos(angle) * len;
+          ctx.strokeStyle = '#333'; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+          ctx.fillStyle = `hsl(${i*24}, 80%, 60%)`; ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI*2); ctx.fill();
+        }
+        time += 0.02; anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); canvas.remove(); };
+    }
+  },
+  { id: 16, title: "Sorting Visualizer", icon: "📊", desc: "Watch a bubble sort algorithm organize data bars.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;width:100%;height:100%;";
+      const container = document.createElement('div'); container.style.cssText = "display:flex;align-items:flex-end;height:300px;width:90%;gap:2px;";
+      const btn = document.createElement('button'); btn.textContent = 'Sort'; btn.className = 'exp-btn'; wrap.append(container, btn); c.appendChild(wrap);
+      let arr = Array(50).fill().map(() => 10 + Math.random()*90);
+      let sorting = false;
+      const render = () => {
+        container.innerHTML = '';
+        arr.forEach((val, i) => {
+          const bar = document.createElement('div'); bar.style.cssText = `flex:1;background:${i === sortI || i === sortJ ? '#ff0055' : '#00f0ff'};height:${val}%;transition:height 0.1s;`;
+          container.appendChild(bar);
+        });
+      };
+      let sortI = -1, sortJ = -1;
+      const sort = async () => {
+        if(sorting) return; sorting = true; btn.disabled = true;
+        for(let i=0; i<arr.length; i++) {
+          for(let j=0; j<arr.length-i-1; j++) {
+            if(!sorting) return;
+            sortI = j; sortJ = j+1; render();
+            await new Promise(r => setTimeout(r, 20));
+            if(arr[j] > arr[j+1]) { [arr[j], arr[j+1]] = [arr[j+1], arr[j]]; }
+          }
+        }
+        sortI = sortJ = -1; render(); sorting = false; btn.disabled = false;
+      };
+      btn.addEventListener('click', sort); render();
+      return () => { sorting = false; wrap.remove(); };
+    }
+  },
+  { id: 17, title: "Satisfying Clicker", icon: "🎯", desc: "Click the button. Watch the numbers and confetti fly.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;";
+      const count = document.createElement('div'); count.style.cssText = "font-size:4rem;font-weight:900;color:#fff;margin-bottom:2rem;"; count.textContent = '0';
+      const btn = document.createElement('button'); btn.textContent = 'CLICK ME'; btn.className = 'exp-btn'; btn.style.fontSize = '1.5rem'; btn.style.padding = '1.5rem 3rem';
+      wrap.append(count, btn); c.appendChild(wrap);
+      let clicks = 0;
+      btn.addEventListener('click', e => {
+        clicks++; count.textContent = clicks;
+        for(let i=0;i<10;i++) {
+          const p = document.createElement('div'); p.style.cssText = `position:absolute;width:8px;height:8px;background:hsl(${Math.random()*360},80%,60%);border-radius:50%;pointer-events:none;left:${e.clientX}px;top:${e.clientY}px;transition:all 0.8s ease-out;`;
+          document.body.appendChild(p);
+          requestAnimationFrame(() => { p.style.transform = `translate(${(Math.random()-0.5)*200}px, ${(Math.random()-0.5)*200}px)`; p.style.opacity = '0'; });
+          setTimeout(() => p.remove(), 800);
+        }
+      });
+      return () => { wrap.remove(); };
+    }
+  },
+  { id: 18, title: "Gradient Generator", icon: "🌈", desc: "Generate beautiful random CSS gradients and copy them.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;gap:1.5rem;padding:2rem;";
+      const preview = document.createElement('div'); preview.style.cssText = "width:300px;height:200px;border-radius:12px;border:2px solid #333;transition:background 0.3s;";
+      const code = document.createElement('code'); code.style.cssText = "background:#222;padding:1rem;border-radius:6px;color:#00ff9d;font-family:monospace;word-break:break-all;max-width:400px;text-align:center;";
+      const btn = document.createElement('button'); btn.textContent = 'Generate New'; btn.className = 'exp-btn';
+      wrap.append(preview, code, btn); c.appendChild(wrap);
+      const gen = () => {
+        const deg = Math.floor(Math.random()*360);
+        const c1 = `hsl(${Math.random()*360}, 70%, 60%)`, c2 = `hsl(${Math.random()*360}, 70%, 60%)`;
+        const css = `linear-gradient(${deg}deg, ${c1}, ${c2})`;
+        preview.style.background = css; code.textContent = css;
+      };
+      btn.addEventListener('click', gen); gen();
+      return () => { wrap.remove(); };
+    }
+  },
+  { id: 19, title: "Memory Match", icon: "🧠", desc: "Flip cards to find matching emoji pairs.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;";
+      const grid = document.createElement('div'); grid.style.cssText = "display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:320px;";
+      const emojis = ['🚀','🌟','🎵','🔥','💎','🌈','🍀','🎲'];
+      let cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+      let flipped = [], matched = 0, locked = false;
+      cards.forEach((emoji, i) => {
+        const card = document.createElement('div'); card.style.cssText = "width:70px;height:70px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;transition:transform 0.3s, background 0.3s;transform-style:preserve-3d;";
+        card.dataset.emoji = emoji; card.dataset.idx = i;
+        card.addEventListener('click', () => {
+          if(locked || card.classList.contains('matched') || flipped.includes(card)) return;
+          card.textContent = emoji; card.style.background = '#333'; flipped.push(card);
+          if(flipped.length === 2) {
+            locked = true;
+            if(flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+              flipped.forEach(c => { c.classList.add('matched'); c.style.background = '#00ff9d'; });
+              matched += 2; flipped = []; locked = false;
+              if(matched === 16) setTimeout(() => alert('You Win!'), 300);
+            } else {
+              setTimeout(() => { flipped.forEach(c => { c.textContent = ''; c.style.background = '#222'; }); flipped = []; locked = false; }, 800);
+            }
+          }
+        });
+        grid.appendChild(card);
+      });
+      wrap.appendChild(grid); c.appendChild(wrap);
+      return () => { wrap.remove(); };
+    }
+  },
+  { id: 20, title: "Spirograph", icon: "✏️", desc: "Mathematical beauty drawn in real-time.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let t = 0, anim;
+      const R = 150, r = 52, d = 70;
+      let px = canvas.width/2 + (R - r) + d, py = canvas.height/2;
+      ctx.fillStyle = '#0a0a0f'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      const loop = () => {
+        t += 0.05;
+        const x = canvas.width/2 + (R - r) * Math.cos(t) + d * Math.cos(((R - r) / r) * t);
+        const y = canvas.height/2 + (R - r) * Math.sin(t) - d * Math.sin(((R - r) / r) * t);
+        ctx.strokeStyle = `hsl(${t*20}, 80%, 60%)`; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y); ctx.stroke();
+        px = x; py = y;
+        if(t < 200) anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); canvas.remove(); };
+    }
+  },
+  { id: 21, title: "Text Stats", icon: "📈", desc: "Live word count, character count, and reading time.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;width:100%;padding:1rem;";
+      const area = document.createElement('textarea'); area.className = 'exp-textarea'; area.placeholder = "Paste or type text here...";
+      const stats = document.createElement('div'); stats.style.cssText = "display:flex;gap:2rem;margin-top:1rem;color:#888;font-size:0.9rem;";
+      stats.innerHTML = "<span>Words: <b id='w' style='color:#fff'>0</b></span><span>Chars: <b id='c' style='color:#fff'>0</b></span><span>Read Time: <b id='t' style='color:#fff'>0m</b></span>";
+      wrap.append(area, stats); c.appendChild(wrap);
+      const update = () => {
+        const txt = area.value.trim();
+        $('#w').textContent = txt ? txt.split(/\s+/).length : 0;
+        $('#c').textContent = area.value.length;
+        $('#t').textContent = Math.ceil((txt ? txt.split(/\s+/).length : 0) / 200) + 'm';
+      };
+      area.addEventListener('input', update);
+      return () => { area.removeEventListener('input', update); wrap.remove(); };
+    }
+  },
+  { id: 22, title: "Fireworks", icon: "🎆", desc: "Click anywhere to launch explosive particle effects.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let particles = [];
+      const explode = e => {
+        const r = canvas.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        const color = `hsl(${Math.random()*360}, 80%, 60%)`;
+        for(let i=0;i<40;i++) {
+          const angle = (Math.PI*2/40)*i, speed = 2+Math.random()*4;
+          particles.push({x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1, color});
+        }
+      };
+      canvas.addEventListener('mousedown', explode); canvas.addEventListener('touchstart', e => { e.preventDefault(); explode(e.touches[0]); }, {passive:false});
+      let anim; const loop = () => {
+        ctx.fillStyle = 'rgba(10,10,15,0.2)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        particles = particles.filter(p => {
+          p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.life -= 0.02;
+          ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
+          return p.life > 0;
+        });
+        ctx.globalAlpha = 1; anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); canvas.remove(); };
+    }
+  },
+  { id: 23, title: "Liquid Blob", icon: "💧", desc: "A morphing organic shape that follows your cursor.",
+    init: (c) => {
+      const blob = document.createElement('div'); blob.style.cssText = "width:200px;height:200px;background:linear-gradient(135deg, #00f0ff, #bd00ff);border-radius:60% 40% 30% 70% / 60% 30% 70% 40%;transition:border-radius 0.5s;position:absolute;pointer-events:none;mix-blend-mode:screen;";
+      c.appendChild(blob);
+      let tx = c.clientWidth/2, ty = c.clientHeight/2, x = tx, y = ty;
+      const move = e => { const r = c.getBoundingClientRect(); tx = e.clientX - r.left - 100; ty = e.clientY - r.top - 100; };
+      c.addEventListener('mousemove', move); c.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0]); }, {passive:false});
+      let anim; const loop = () => {
+        x += (tx - x) * 0.1; y += (ty - y) * 0.1;
+        blob.style.transform = `translate(${x}px, ${y}px)`;
+        blob.style.borderRadius = `${60+Math.sin(Date.now()*0.002)*20}% ${40+Math.cos(Date.now()*0.003)*20}% ${30+Math.sin(Date.now()*0.004)*20}% ${70+Math.cos(Date.now()*0.002)*20}%`;
+        anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); blob.remove(); };
+    }
+  },
+  { id: 24, title: "Mini Piano", icon: "🎼", desc: "A simplified visual piano keyboard.",
+    init: (c) => {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;position:relative;height:200px;width:90%;max-width:600px;";
+      const notes = [261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88];
+      notes.forEach((freq, i) => {
+        const isBlack = [1,3,6,8,10].includes(i);
+        const key = document.createElement('div');
+        key.style.cssText = `position:absolute;height:${isBlack?'60%':'100%'};width:${100/7}%;left:${(i - [0,0,1,1,2,3,3,4,4,5,5,6][i]) * (100/7)}%;background:${isBlack?'#111':'#eee'};border:${isBlack?'none':'1px solid #999'};border-radius:0 0 4px 4px;z-index:${isBlack?2:1};cursor:pointer;transition:background 0.1s;`;
+        const play = () => {
+          if(ctx.state === 'suspended') ctx.resume();
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = freq; gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+          osc.start(); osc.stop(ctx.currentTime + 0.5);
+          key.style.background = isBlack ? '#00f0ff' : '#00f0ff'; setTimeout(() => key.style.background = isBlack ? '#111' : '#eee', 200);
+        };
+        key.addEventListener('mousedown', play); key.addEventListener('touchstart', (e)=>{e.preventDefault(); play();}, {passive:false});
+        wrap.appendChild(key);
+      });
+      c.appendChild(wrap);
+      return () => { ctx.close(); wrap.remove(); };
+    }
+  },
+  { id: 25, title: "Noise Terrain", icon: "🏔️", desc: "Procedural landscape generated from stacked sine waves.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let time = 0, anim;
+      const loop = () => {
+        ctx.fillStyle = '#0a0a0f'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        for(let layer=0; layer<5; layer++) {
+          ctx.fillStyle = `rgba(0, 240, 255, ${0.1 + layer*0.15})`;
+          ctx.beginPath(); ctx.moveTo(0, canvas.height);
+          for(let x=0; x<=canvas.width; x+=10) {
+            const y = canvas.height * (0.6 + layer*0.08) + Math.sin(x*0.005 + time + layer)*50 + Math.sin(x*0.02 - time*2)*20;
+            ctx.lineTo(x, y);
+          }
+          ctx.lineTo(canvas.width, canvas.height); ctx.fill();
+        }
+        time += 0.01; anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); canvas.remove(); };
+    }
+  },
+  { id: 26, title: "Stopwatch", icon: "⏱️", desc: "Precise start, stop, reset, and lap functionality.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;";
+      const display = document.createElement('div'); display.style.cssText = "font-size:4rem;font-family:monospace;color:#fff;margin:2rem 0;"; display.textContent = "00:00.00";
+      const controls = document.createElement('div'); controls.style.cssText = "display:flex;gap:1rem;";
+      const startBtn = document.createElement('button'); startBtn.textContent = 'Start'; startBtn.className = 'exp-btn';
+      const resetBtn = document.createElement('button'); resetBtn.textContent = 'Reset'; resetBtn.className = 'exp-btn'; resetBtn.style.background = '#333'; resetBtn.style.color = '#fff';
+      controls.append(startBtn, resetBtn); wrap.append(display, controls); c.appendChild(wrap);
+      let running = false, startTime = 0, elapsed = 0, interval;
+      const update = () => {
+        const total = running ? Date.now() - startTime + elapsed : elapsed;
+        const m = Math.floor(total/60000).toString().padStart(2,'0');
+        const s = Math.floor((total%60000)/1000).toString().padStart(2,'0');
+        const ms = Math.floor((total%1000)/10).toString().padStart(2,'0');
+        display.textContent = `${m}:${s}.${ms}`;
+      };
+      startBtn.addEventListener('click', () => {
+        if(running) { elapsed += Date.now() - startTime; running = false; startBtn.textContent = 'Start'; clearInterval(interval); }
+        else { running = true; startTime = Date.now(); startBtn.textContent = 'Stop'; startBtn.style.background = '#ff0055'; interval = setInterval(update, 10); }
+      });
+      resetBtn.addEventListener('click', () => { running = false; elapsed = 0; startBtn.textContent = 'Start'; startBtn.style.background = ''; clearInterval(interval); update(); });
+      return () => { clearInterval(interval); wrap.remove(); };
+    }
+  },
+  { id: 27, title: "Caesar Cipher", icon: "🔐", desc: "Encode and decode text with a shift value.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;width:100%;padding:1rem;";
+      const input = document.createElement('textarea'); input.className = 'exp-textarea'; input.placeholder = "Enter text to encrypt...";
+      const slider = document.createElement('input'); slider.type = 'range'; slider.min = '1'; slider.max = '25'; slider.value = '3'; slider.className = 'exp-slider';
+      const shiftLabel = document.createElement('div'); shiftLabel.style.cssText = "color:#888;margin-bottom:1rem;"; shiftLabel.textContent = "Shift: 3";
+      const output = document.createElement('div'); output.style.cssText = "background:#222;padding:1rem;border-radius:6px;color:#00ff9d;font-family:monospace;width:100%;max-width:500px;min-height:100px;word-break:break-all;";
+      wrap.append(input, slider, shiftLabel, output); c.appendChild(wrap);
+      const process = () => {
+        const shift = parseInt(slider.value);
+        shiftLabel.textContent = `Shift: ${shift}`;
+        output.textContent = input.value.replace(/[a-zA-Z]/g, char => {
+          const base = char <= 'Z' ? 65 : 97;
+          return String.fromCharCode(((char.charCodeAt(0) - base + shift) % 26) + base);
+        });
+      };
+      input.addEventListener('input', process); slider.addEventListener('input', process);
+      return () => { wrap.remove(); };
+    }
+  },
+  { id: 28, title: "Orbiting Planets", icon: "🪐", desc: "A simplified, animated solar system model.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let time = 0, anim;
+      const planets = [{r: 40, speed: 0.02, size: 4, color: '#aaa'}, {r: 70, speed: 0.015, size: 6, color: '#00f0ff'}, {r: 110, speed: 0.01, size: 8, color: '#bd00ff'}, {r: 150, speed: 0.008, size: 7, color: '#ff0055'}];
+      const loop = () => {
+        ctx.fillStyle = '#0a0a0f'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        const cx = canvas.width/2, cy = canvas.height/2;
+        ctx.fillStyle = '#ffff00'; ctx.beginPath(); ctx.arc(cx, cy, 15, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#222';
+        planets.forEach(p => {
+          ctx.beginPath(); ctx.arc(cx, cy, p.r, 0, Math.PI*2); ctx.stroke();
+          const x = cx + Math.cos(time * p.speed * 100) * p.r;
+          const y = cy + Math.sin(time * p.speed * 100) * p.r;
+          ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(x, y, p.size, 0, Math.PI*2); ctx.fill();
+        });
+        time += 0.01; anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); canvas.remove(); };
+    }
+  },
+  { id: 29, title: "Decision Maker", icon: "🎲", desc: "Can't decide? Input options and let fate choose.",
+    init: (c) => {
+      const wrap = document.createElement('div'); wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;width:100%;padding:1rem;";
+      const input = document.createElement('textarea'); input.className = 'exp-textarea'; input.placeholder = "Option 1\nOption 2\nOption 3"; input.value = "Pizza\nSushi\nBurgers\nSalad";
+      const btn = document.createElement('button'); btn.textContent = 'Decide for Me'; btn.className = 'exp-btn';
+      const result = document.createElement('div'); result.style.cssText = "font-size:2rem;font-weight:900;color:#00f0ff;margin-top:2rem;min-height:3rem;";
+      wrap.append(input, btn, result); c.appendChild(wrap);
+      let timer;
+      btn.addEventListener('click', () => {
+        const options = input.value.split('\n').filter(x => x.trim());
+        if(options.length < 2) return;
+        let i = 0, speed = 50;
+        clearInterval(timer);
+        const spin = () => {
+          result.textContent = options[i % options.length];
+          i++;
+          if(speed < 400) speed *= 1.1;
+          if(speed > 300) { result.style.transform = "scale(1.2)"; setTimeout(()=>result.style.transform="scale(1)", 200); return; }
+          timer = setTimeout(spin, speed);
+        };
+        spin();
+      });
+      return () => { clearTimeout(timer); wrap.remove(); };
+    }
+  },
+  { id: 30, title: "Zen Garden", icon: "🎋", desc: "Click to create calming, fading ripples in the sand.",
+    init: (c) => {
+      const canvas = document.createElement('canvas'); canvas.className = 'exp-canvas'; canvas.width = c.clientWidth; canvas.height = c.clientHeight; c.appendChild(canvas);
+      const ctx = canvas.getContext('2d'); let ripples = [];
+      const click = e => {
+        const r = canvas.getBoundingClientRect();
+        ripples.push({x: e.clientX - r.left, y: e.clientY - r.top, radius: 0, alpha: 1});
+      };
+      canvas.addEventListener('mousedown', click); canvas.addEventListener('touchstart', e => { e.preventDefault(); click(e.touches[0]); }, {passive:false});
+      let anim; const loop = () => {
+        ctx.fillStyle = 'rgba(10,10,15,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ripples = ripples.filter(r => {
+          r.radius += 2; r.alpha -= 0.01;
+          ctx.strokeStyle = `rgba(0, 240, 255, ${r.alpha})`; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI*2); ctx.stroke();
+          return r.alpha > 0;
+        });
+        anim = requestAnimationFrame(loop);
+      }; loop();
+      return () => { cancelAnimationFrame(anim); canvas.remove(); };
+    }
   }
-}
-resizeC4();
-onresize=resizeC4;
-c4.onclick=e=>{
-  const x4=c4.getContext('2d');
-  for(let i=0;i<50;i++){
-    x4.fillStyle=`hsla(${Math.random()*360},90%,60%,.6)`;
-    x4.beginPath();x4.arc(e.clientX+Math.random()*40-20,e.clientY+Math.random()*40-20,Math.random()*5,0,7);x4.fill();
-  }
-};
+];
 
-// Site 5: Zen
-const p5=document.getElementById('phase');
-const phases=[['BREATHE IN',4000],['HOLD',7000],['BREATHE OUT',8000]];
-let pi=0;
-function cycle(){
-  p5.textContent=phases[pi][0];
-  setTimeout(()=>{pi=(pi+1)%3;cycle()},phases[pi][1]);
-}
-cycle();
+// Initialize Hub
+const grid = $('#card-grid');
+experiments.forEach(exp => {
+  const card = document.createElement('div'); card.className = 'card';
+  card.innerHTML = `<div class="card-icon">${exp.icon}</div><div class="card-title">${exp.title}</div><div class="card-desc">${exp.desc}</div>`;
+  card.addEventListener('click', () => App.open(exp.id));
+  grid.appendChild(card);
+});
 
-// Site 6: Terminal
-const t6=document.getElementById('term');
-const lines=['[ SYSTEM BOOT v3.7.1 ]','> Initializing neural mesh...','> Bypassing firewall...','> Access granted.','> Welcome, operator.',''];
-let li=0;
-function type6(){
-  if(li<lines.length){t6.textContent+=lines[li]+'\n';li++;setTimeout(type6,400)}
+// Handle initial hash
+if(window.location.hash.startsWith('#exp-')) {
+  const id = parseInt(window.location.hash.split('-')[1]);
+  App.open(id);
 }
-type6();
-const cmd6=document.getElementById('cmd');
-cmd6.onkeydown=e=>{
-  if(e.key==='Enter'){
-    t6.textContent+='\n> '+cmd6.value+'\n';
-    const r=['ACCESS DENIED','DECRYPTING...','SIGNAL LOST','TRACE COMPLETE','404 SOUL NOT FOUND'][Math.floor(Math.random()*5)];
-    t6.textContent+='  → '+r+'\n';
-    cmd6.value='';
-  }
-};
-
-// Site 7: Weather
-const s7=document.getElementById('scene');let loop7;
-function setMood(m){
-  clearInterval(loop7);s7.innerHTML='';
-  const bgs={rain:'linear-gradient(#334,#112)',snow:'linear-gradient(#aac,#668)',sunny:'linear-gradient(#ffd,#fa0)',autumn:'linear-gradient(#f80,#630)'};
-  document.getElementById('site7').style.background=bgs[m];
-  loop7=setInterval(()=>{
-    const p=document.createElement('div');
-    if(m==='rain'){p.style.cssText=`left:${Math.random()*100}%;top:-20px;width:2px;height:20px;background:#8cf;position:absolute`;s7.appendChild(p);let y=-20;const i=setInterval(()=>{y+=15;p.style.top=y+'px';if(y>innerHeight){clearInterval(i);p.remove()}},30)}
-    if(m==='snow'){p.style.cssText=`left:${Math.random()*100}%;top:-20px;width:8px;height:8px;background:#fff;border-radius:50%;position:absolute`;s7.appendChild(p);let y=-20,x=parseFloat(p.style.left);const i=setInterval(()=>{y+=3;x+=Math.sin(y*.05)*.5;p.style.top=y+'px';p.style.left=x+'%';if(y>innerHeight){clearInterval(i);p.remove()}},30)}
-    if(m==='sunny'){p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:4px;height:4px;background:#fff;border-radius:50%;position:absolute;opacity:.5`;s7.appendChild(p);setTimeout(()=>p.remove(),2000)}
-    if(m==='autumn'){p.style.cssText=`left:${Math.random()*100}%;top:-20px;font-size:20px;position:absolute`;p.textContent='🍂';s7.appendChild(p);let y=-20;const i=setInterval(()=>{y+=4;p.style.top=y+'px';p.style.transform=`rotate(${y}deg)`;if(y>innerHeight){clearInterval(i);p.remove()}},40)}
-  },100);
-}
-setMood('rain');
-
-// Site 8: Poetry
-const a8=['whispering','silent','golden','ancient','forgotten','dancing','falling','burning','sleeping','waking'];
-const b8=['mountains','rivers','moonlight','shadows','petals','stars','dreams','memories','winds','flames'];
-const c8=['through my soul','in the dark','at dawn','without end','forevermore','like a sigh','beneath the sky','where time stands still','in the void','upon the breeze'];
-function r8(arr){return arr[Math.floor(Math.random()*arr.length)]}
-function generatePoem(){
-  document.getElementById('poem').innerHTML=`${r8(a8)} ${r8(b8)}<br>${r8(b8)} ${r8(c8)}<br>${r8(a8)} ${r8(b8)}`;
-}
-
-// Site 9: Cube
-const cube=document.getElementById('cube');let rx=20,ry=30,drag=false,lx,ly;
-function startDrag(e){drag=true;const t=e.touches?e.touches[0]:e;lx=t.clientX;ly=t.clientY}
-function endDrag(){drag=false}
-function moveDrag(e){
-  if(!drag)return;
-  const t=e.touches?e.touches[0]:e;
-  ry+=(t.clientX-lx)*.5;rx-=(t.clientY-ly)*.5;
-  lx=t.clientX;ly=t.clientY;
-  cube.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;
-}
-cube.onmousedown=startDrag;
-cube.ontouchstart=startDrag;
-onmouseup=endDrag;
-ontouchend=endDrag;
-onmousemove=moveDrag;
-ontouchmove=moveDrag;
-cube.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;
 </script>
-
 </body>
 </html>
